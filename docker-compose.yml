@@ -11,12 +11,14 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_USER: db_user
-            MYSQL_PASSWORD: db_user_pass
+            MYSQL_PASSWORD: db_password
+            MYSQL_DATABASE: webshop
         restart: always
         ports:
             - "6033:3306"
         volumes:
             - dbdata:/var/lib/mysql
+            - ./app/db/init:/docker-entrypoint-initdb.d
       
     phpmyadmin:
         image: phpmyadmin:5.2.0
@@ -30,26 +32,6 @@ services:
         restart: always
         ports:
             - 8081:80
-
-
-#    nodejs:
-#        build:
-#            context: .
-#            dockerfile: nodejs.dockerfile
-#        user: "node"
-#        working_dir: /home/node/app
-#        environment:
-#            #- NODE_ENV=production
-#            - NODE_ENV=development
-#        volumes:
-#            - ./app:/home/node/app
-#            - /home/node/app/node_modules
-#        expose:
-#            - "8080"
-#        ports:
-#            - "8080:8080"
-#        command: "npm start"
-        #command: "npm run dev"
 
 
 # The database will be persistent among containers restarts.

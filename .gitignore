@@ -1,3 +1,10 @@
 /app/node_modules/
 /secured_webshop.iml
 /.idea/
+
+# Photos uploadées par les utilisateurs (conservées localement, pas en git)
+/app/public/uploads/*.jpg
+/app/public/uploads/*.jpeg
+/app/public/uploads/*.png
+/app/public/uploads/*.gif
+/app/public/uploads/*.webp
