@@ -1,29 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Secure Shop - Connexion</title>
-    <link rel="stylesheet" href="/css/main.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
     <div id="topbar"></div>
 
     <main>
-        <section class="hero">
-            <div class="container">
-                <h1>Connexion</h1>
-                <p>Placer un formulaire de connexion ici</p>
-            </div>
-        </section>
+      <section class="hero">
+        <div class="container">
+          <h1>Connexion</h1>
+          <form id="loginForm">
+            <label for="email"><b>Email</b></label>
+            <input
+              type="email"
+              placeholder="Enter Email"
+              name="email"
+              required
+            />
+
+            <label for="password"><b>Password</b></label>
+            <input
+              type="password"
+              placeholder="Enter Password"
+              name="password"
+              required
+            />
+            <button type="submit">Login</button>
+          </form>
+        </div>
+      </section>
     </main>
 
     <footer id="contact" class="footer">
-        <div class="container">
-            <p>Projet pedagogique - ETML 183</p>
-        </div>
+      <div class="container">
+        <p>Projet pedagogique - ETML 183</p>
+      </div>
     </footer>
 
     <script src="/js/nav.js"></script>
-</body>
+  </body>
 </html>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    console.log(formData);
+
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      window.location.href = "/"; // homepage
+    } else {
+      alert(data.error);
+    }
+  });
+</script>
