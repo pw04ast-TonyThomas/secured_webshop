@@ -34,7 +34,37 @@
     ```
 
 2.	Implémenter une page d’inscription en frontend
+    ```js
+      document.getElementById("signUpForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
 
+        const formData = new FormData(e.target);
+
+        const username = formData.get("username");
+        const email = formData.get("email");
+        const password = formData.get("password");
+        const address = formData.get("address");
+
+        console.log(formData);
+
+        const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        body: JSON.stringify({ username ,email, password, address }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+        window.location.href = "/login"; // Login
+        } else {
+        alert(data.error);
+        }
+    });
+    ```
 3.	Remplacer les mots de passes en clair dans la base par un hash
 
 4.	Ajouter un sel

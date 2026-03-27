@@ -14,7 +14,7 @@
         <div class="container">
           <h1>Inscription</h1>
 
-          <form action="/api/auth/register" method="POST">
+          <form id="signUpForm">
             <label for="username"><b>Username</b></label>
             <input
               type="text"
@@ -61,3 +61,35 @@
     <script src="/js/nav.js"></script>
   </body>
 </html>
+
+<script>
+  document.getElementById("signUpForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const username = formData.get("username");
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const address = formData.get("address");
+
+    console.log(formData);
+
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({ username ,email, password, address }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      window.location.href = "/login"; // Login
+    } else {
+      alert(data.error);
+    }
+  });
+</script>
