@@ -41,6 +41,7 @@ module.exports = {
             {
               exp: Math.floor(Date.now() / 1000) + 60 * 72 * 60, // now + 72 hours 
               name: email,
+              admin: results[0].role == "admin" ? true : false 
             },
             process.env.PRIVATEKEY,
             { algorithm: "HS256" },

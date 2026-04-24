@@ -15,7 +15,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Le cookie parser
 app.use(cookieParser());
-const auth = require("./middleware/auth")
+const auth = require("./middleware/auth");
+const adminOnly = require("./middleware/admin");
 
 // ---------------------------------------------------------------
 // Routes API (retournent du JSON)
@@ -40,7 +41,7 @@ app.use("/user", userRoute);
 app.get("/login",    (_req, res) => res.sendFile(path.join(__dirname, "views", "login.html")));
 app.get("/register", (_req, res) => res.sendFile(path.join(__dirname, "views", "register.html")));
 app.get("/profile", auth, (_req, res) => res.sendFile(path.join(__dirname, "views", "profile.html")));
-app.get("/admin", auth, (_req, res) => res.sendFile(path.join(__dirname, "views", "admin.html")));
+app.get("/admin", auth, adminOnly, (_req, res) => res.sendFile(path.join(__dirname, "views", "admin.html")));
 
 // Démarrage du serveur
 app.get("/test",      (_req, res) => res.send("db admin: root, pwd : root"));

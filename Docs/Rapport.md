@@ -236,7 +236,32 @@ router.post('/photo', upload.single('photo'), controller.uploadPhoto);
 ```
 
 ### 8.	Ajouter les rôles administrateur et utilisateur dans le JWT et protéger les routes d’administration
+#### **Admin Middleware**
+```js
+const jwt = require("jsonwebtoken");
 
+module.exports = (req, res, next) => {
+  if (!req.user?.admin) {
+    if (req.originalUrl.startsWith("/api")) {
+      return res.status(403).json({ error: "Admin only" });
+    }
+
+    return res.redirect("/");
+  }
+
+  next();
+};
+```
+
+#### **server.js**
+```js
+const auth = require("./middleware/auth");
+const adminOnly = require("./middleware/admin");
+
+{...}
+
+app.get("/admin", auth, adminOnly, (_req, res) => res.sendFile(path.join(__dirname, "views", "admin.html")));
+```
 ## Liste des activités « faciles » à choix (1 point par tâche)
 ### 9.	Mettre en place le HTTPS
 
