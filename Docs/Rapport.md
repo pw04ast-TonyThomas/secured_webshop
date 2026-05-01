@@ -274,7 +274,27 @@ app.get("/admin", auth, adminOnly, (_req, res) => res.sendFile(path.join(__dirna
 ### 13.	Vérifier la résistance de vos hash avec l’outil John The Ripper et aux rainbow tables, via un export de la BDD
 
 ### 14.	Gérer les exceptions afin de ne pas retourner trop d’information en cas d’erreur
+TODO
+Toutes les erreurs sont prises en charge avec `.handleError()`, `.status()` et `.json()`
 
+#### AuthController — Login
+```js
+  if (...) {
+    {...}
+    res.status(200).json({ message: "Authentication successful" });
+  } else {
+    res.status(401).json({ error: "Invalid username or password" });
+  }
+```
+
+#### AuthController — Register
+```js
+  if (err) {
+    return res.status(500).json({ error: "Insert failed" });
+  }
+
+  return res.status(201).json({ message: "Utilisateur créé !" });
+```
 ## Liste des activités « moyennes » à choix (2 points par tâche)
 
 15.	Limiter le nombre de tentatives de login (exemple : 5 essais par minute par IP) pour contrer le brute-force

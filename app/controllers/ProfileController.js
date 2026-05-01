@@ -1,8 +1,6 @@
 const path = require('path');
 const db = require('../config/db');
 
-const DEFAULT_USER_ID = 1;
-
 module.exports = {
 
     // ----------------------------------------------------------
