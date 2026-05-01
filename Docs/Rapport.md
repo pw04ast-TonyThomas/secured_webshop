@@ -270,6 +270,77 @@ app.get("/admin", auth, adminOnly, (_req, res) => res.sendFile(path.join(__dirna
 ### 11.	Limiter la durée du token JWT actuel et implémenter un refresh token pour rester connecté sur une longue période
 
 ### 12.	Effectuer un audit des dépendances NPM, corriger et documenter la correction
+#### bash
+faire un audit fix répare automatiquement toutes les vulnérabilitées.
+```c
+pw04ast@INF-A13-M205 MINGW64 /c/Users/pw04ast.DGEP/Documents/secured_webshop/app (main)
+$ npm audit
+# npm audit report
+
+body-parser  <=1.20.3 || 2.0.0-beta.1 - 2.0.2
+Severity: high
+body-parser vulnerable to denial of service when url encoding is enabled - https://github.com/advisories/GHSA-qwcr-r2fm-qrc7
+Depends on vulnerable versions of qs
+{...}
+
+brace-expansion  <=1.1.12
+Severity: moderate
+brace-expansion Regular Expression Denial of Service vulnerability - https://github.com/advisories/GHSA-v6h2-p8h4-qcjw
+brace-expansion: Zero-step sequence causes process hang and memory exhaustion - https://github.com/advisories/GHSA-f886-m6hf-6m8v
+{...}
+
+braces  <3.0.3
+Severity: high
+Uncontrolled resource consumption in braces - https://github.com/advisories/GHSA-grv7-fg5c-xmjg
+{...}
+
+cookie  <0.7.0
+cookie accepts cookie name, path, and domain with out of bounds characters - https://github.com/advisories/GHSA-pxg6-pf52-xh8x
+{...}
+
+minimatch  <=3.1.3
+Severity: high
+minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern - https://github.com/advisories/GHSA-3ppc-4f35-3m26
+minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments - https://github.com/advisories/GHSA-7r86-cg39-jmmj
+minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions - https://github.com/advisories/GHSA-23c5-xmqv-rm74
+{...}
+
+path-to-regexp  <=0.1.12
+Severity: high
+path-to-regexp outputs backtracking regular expressions - https://github.com/advisories/GHSA-9wv6-86v2-598j
+path-to-regexp contains a ReDoS - https://github.com/advisories/GHSA-rhx6-c78j-4q9w
+path-to-regexp vulnerable to Regular Expression Denial of Service via multiple route parameters - https://github.com/advisories/GHSA-37ch-88jc-xwx2
+{...}
+
+picomatch  <=2.3.1
+Severity: high
+Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching - https://github.com/advisories/GHSA-3v7f-55p6-f55p
+Picomatch has a ReDoS vulnerability via extglob quantifiers - https://github.com/advisories/GHSA-c2c7-rcm5-vvqj
+{...}
+
+qs  <=6.14.1
+Severity: moderate
+qs's arrayLimit bypass in comma parsing allows denial of service - https://github.com/advisories/GHSA-w7fw-mjwx-w883
+qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion - https://github.com/advisories/GHSA-6rw7-vpxm-498p
+{...}
+
+send  <0.19.0
+send vulnerable to template injection that can lead to XSS - https://github.com/advisories/GHSA-m6fv-jmcg-4jfg
+{...}
+
+11 vulnerabilities (3 low, 2 moderate, 6 high)
+```
+```c
+pw04ast@INF-A13-M205 MINGW64 /c/Users/pw04ast.DGEP/Documents/secured_webshop/app (main)
+$ npm audit fix
+
+added 10 packages, removed 6 packages, changed 25 packages, and audited 149 packages in 2s
+
+22 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+```
 
 ### 13.	Vérifier la résistance de vos hash avec l’outil John The Ripper et aux rainbow tables, via un export de la BDD
 
