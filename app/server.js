@@ -2,6 +2,7 @@ require('dotenv').config({ path: '../.env' });
 const cookieParser = require("cookie-parser")
 
 const express = require("express");
+const helmet = require("helmet");
 const path = require("path");
 
 const app = express();
@@ -17,6 +18,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 const auth = require("./middleware/auth");
 const adminOnly = require("./middleware/admin");
+
+// Headers fix using helmet
+app.use(helmet());
 
 // ---------------------------------------------------------------
 // Routes API (retournent du JSON)

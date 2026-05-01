@@ -390,4 +390,14 @@ Toutes les erreurs sont prises en charge avec `.handleError()`, `.status()` et `
 
 4.	Dans sa version actuelle, le web shop peut recevoir votre photo de profil mais il faut mettre en place de la sécurité pour éviter l’envoi de fichier malveillants 
 
-5.	Scanner l’application avec OWASP ZAP, récupérer le rapport de scan et corriger au moins 3 alertes
+### 5.	Scanner l’application avec OWASP ZAP, récupérer le rapport de scan et corriger au moins 3 alertes
+Au scan de base le résultat est : FAIL-NEW: 0     FAIL-INPROG: 0  WARN-NEW: 6     WARN-INPROG: 0  INFO: 0 IGNORE: 0       PASS: 136
+
+Donc 6 problèmes sont présents.
+
+après avoir installé et ajouté helmet
+```js
+// Headers fix using helmet
+app.use(helmet());
+```
+FAIL-NEW: 0     FAIL-INPROG: 0  WARN-NEW: 5     WARN-INPROG: 0  INFO: 0 IGNORE: 0       PASS: 137
