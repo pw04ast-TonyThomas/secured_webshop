@@ -40,6 +40,7 @@ module.exports = {
           var token = jwt.sign(
             {
               exp: Math.floor(Date.now() / 1000) + 60 * 72 * 60, // now + 72 hours 
+              id: results[0].id,
               name: email,
               admin: results[0].role == "admin" ? true : false 
             },
