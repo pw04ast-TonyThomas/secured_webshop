@@ -1,4 +1,8 @@
 # Rapport de Projet P_App_Webstore
+## Introduction
+Le but du projet est de completer des tâches pour arriver à un total de points de 15.  
+Les étapes 1 à 8 (8 points) obligatoires ont été finies. ensuite une étape facile (1 point) et deux étapes difficiles (6 points) ont été faites pour un total de 15 points.
+
 ## Liste des activités obligatoires (1 point par tâche)
 ### 1.	Implémenter une page de login en frontend
 #### **login.html**
@@ -263,11 +267,6 @@ const adminOnly = require("./middleware/admin");
 app.get("/admin", auth, adminOnly, (_req, res) => res.sendFile(path.join(__dirname, "views", "admin.html")));
 ```
 ## Liste des activités « faciles » à choix (1 point par tâche)
-### 9.	Mettre en place le HTTPS
-
-### 10.	Mettre en place une politique de mot de passe fort (minuscules, majuscule, longueur minimale, caractères spéciaux) avec l’affichage d’un indicateur de force
-
-### 11.	Limiter la durée du token JWT actuel et implémenter un refresh token pour rester connecté sur une longue période
 
 ### 12.	Effectuer un audit des dépendances NPM, corriger et documenter la correction
 #### bash
@@ -342,8 +341,6 @@ added 10 packages, removed 6 packages, changed 25 packages, and audited 149 pack
 found 0 vulnerabilities
 ```
 
-### 13.	Vérifier la résistance de vos hash avec l’outil John The Ripper et aux rainbow tables, via un export de la BDD
-
 ### 14.	Gérer les exceptions afin de ne pas retourner trop d’information en cas d’erreur
 TODO
 Toutes les erreurs sont prises en charge avec `.handleError()`, `.status()` et `.json()`
@@ -366,28 +363,7 @@ Toutes les erreurs sont prises en charge avec `.handleError()`, `.status()` et `
 
   return res.status(201).json({ message: "Utilisateur créé !" });
 ```
-## Liste des activités « moyennes » à choix (2 points par tâche)
-
-### 15.	Limiter le nombre de tentatives de login (exemple : 5 essais par minute par IP) pour contrer le brute-force
-
-### 16.	Implémenter un verrouillage de compte après N tentative de connexion échouées, enregistrer les tentatives en BDD et prévoir un mécan### isme de déblocage
-
-### 17.	Réaliser un audit de sécurité de votre application, lister les failles identifiées en les classant selon le top 10 2025 OWASP
-
-### 18.	Chiffrement des données sensibles (adresse, etc.) dans la base  
-
-### 19.	Protection XSS : identifier une faille XSS dans l’application et faire en sorte de la corriger
-
-### 20.	Mettre en place un principe de moindre privilège sur la BDD, créer un utilisateur spécifique qui sera employé par les scripts
-
 ## Liste des activités « difficiles » à choix (3 points par tâche)
-
-### 1.	Implémenter une protection CSRF sur un formulaire du site
-
-### 2.	Journalisation sécurisée des événements : logger les connexions, accès refusés et erreurs sans exposer de données sensibles
-
-### 3.	Implémenter une authentification à double facteur
-
 ### 4.	Dans sa version actuelle, le web shop peut recevoir votre photo de profil mais il faut mettre en place de la sécurité pour éviter l’envoi de fichier malveillants 
 C'est asser simple, on modifie l'implémentation actuelle de Multer et on la solidifie.  
 #### Profile.js
