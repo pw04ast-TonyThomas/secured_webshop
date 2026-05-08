@@ -368,36 +368,159 @@ Toutes les erreurs sont prises en charge avec `.handleError()`, `.status()` et `
 ```
 ## Liste des activités « moyennes » à choix (2 points par tâche)
 
-15.	Limiter le nombre de tentatives de login (exemple : 5 essais par minute par IP) pour contrer le brute-force
+### 15.	Limiter le nombre de tentatives de login (exemple : 5 essais par minute par IP) pour contrer le brute-force
 
-16.	Implémenter un verrouillage de compte après N tentative de connexion échouées, enregistrer les tentatives en BDD et prévoir un mécanisme de déblocage
+### 16.	Implémenter un verrouillage de compte après N tentative de connexion échouées, enregistrer les tentatives en BDD et prévoir un mécan### isme de déblocage
 
-17.	Réaliser un audit de sécurité de votre application, lister les failles identifiées en les classant selon le top 10 2025 OWASP
+### 17.	Réaliser un audit de sécurité de votre application, lister les failles identifiées en les classant selon le top 10 2025 OWASP
 
-18.	Chiffrement des données sensibles (adresse, etc.) dans la base  
+### 18.	Chiffrement des données sensibles (adresse, etc.) dans la base  
 
-19.	Protection XSS : identifier une faille XSS dans l’application et faire en sorte de la corriger
+### 19.	Protection XSS : identifier une faille XSS dans l’application et faire en sorte de la corriger
 
-20.	Mettre en place un principe de moindre privilège sur la BDD, créer un utilisateur spécifique qui sera employé par les scripts
+### 20.	Mettre en place un principe de moindre privilège sur la BDD, créer un utilisateur spécifique qui sera employé par les scripts
 
 ## Liste des activités « difficiles » à choix (3 points par tâche)
 
-1.	Implémenter une protection CSRF sur un formulaire du site
+### 1.	Implémenter une protection CSRF sur un formulaire du site
 
-2.	Journalisation sécurisée des événements : logger les connexions, accès refusés et erreurs sans exposer de données sensibles
+### 2.	Journalisation sécurisée des événements : logger les connexions, accès refusés et erreurs sans exposer de données sensibles
 
-3.	Implémenter une authentification à double facteur
+### 3.	Implémenter une authentification à double facteur
 
-4.	Dans sa version actuelle, le web shop peut recevoir votre photo de profil mais il faut mettre en place de la sécurité pour éviter l’envoi de fichier malveillants 
+### 4.	Dans sa version actuelle, le web shop peut recevoir votre photo de profil mais il faut mettre en place de la sécurité pour éviter l’envoi de fichier malveillants 
+C'est asser simple, on modifie l'implémentation actuelle de Multer et on la solidifie.  
+#### Profile.js
+On Force une extension Lowercase, on filtre par le type de fichier autorisé et finalement on limite la taille à 2MB. Ensuite dans le Post on ajoute du support pour les erreurs.
+```js
+// Configuration de multer pour l'upload de photos
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, '../public/uploads'),
+    filename: (_req, file, callback) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+
+        // Force une bonne extension qui est lowercase
+        const ext = path.extname(file.originalname).toLowerCase();
+
+        callback(null, uniqueSuffix + ext);
+    }
+});
+
+// Filtrage des fichiers que je veux accepté
+function fileFilter(_req, file, callback) {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (!allowedTypes.includes(file.mimetype)) {
+        return callback(new Error('Format de fichier non autorisé'), false);
+    }
+
+    callback(null, true);
+}
+
+// On crée la norme Multer.
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 2 * 1024 * 1024 // 2mb pour pas de fichier trop volumineux.
+    }
+});
+
+router.get('/', controller.get);
+router.post('/', controller.update);
+// Check d'erreur Multer
+router.post('/photo', (req, res, next) => {
+    upload.single('photo')(req, res, (err) => {
+        if (err instanceof multer.MulterError || err) {
+            return res.status(400).json({ error: err.message });
+        }
+        next();
+    });
+}, controller.uploadPhoto);
+```
+#### ProfileController.js
+Ensuite dans le controlleur on revérifie que le format est correct.
+```js
+uploadPhoto: (req, res) => {
+    const userId = req.user.id;
+
+    if (!req.file) {
+        return res.status(400).json({ error: 'Aucun fichier reçu' });
+    }
+
+    // vérif de plus
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(req.file.mimetype)) {
+        return res.status(400).json({ error: "Type de fichier invalide" });
+    }
+
+    const photoPath = '/uploads/' + req.file.filename;
+
+    db.query('UPDATE users SET photo_path = ? WHERE id = ?', [photoPath, userId], (err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Erreur serveur' });
+        }
+        res.json({ message: 'Photo mise à jour', photo_path: photoPath });
+    });
+}
+```
+#### Profile.html
+Finalement on change la selection de fichier du coté UI pour accepté que les fichiers autorisés.
+```html
+<input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.webp">
+```
 
 ### 5.	Scanner l’application avec OWASP ZAP, récupérer le rapport de scan et corriger au moins 3 alertes
-Au scan de base le résultat est : FAIL-NEW: 0     FAIL-INPROG: 0  WARN-NEW: 6     WARN-INPROG: 0  INFO: 0 IGNORE: 0       PASS: 136
+Au Scan ZAP de base le résultat est
+```
+FAIL-NEW: 0     FAIL-INPROG: 0  WARN-NEW: 6     WARN-INPROG: 0  INFO: 0 IGNORE: 0       PASS: 136
+```
+Donc 6 problèmes sont présents. La plupart des problèmes sont sur les headers donc on peux utiliser helmet pour nous aider.
 
-Donc 6 problèmes sont présents.
-
-après avoir installé et ajouté helmet
+après avoir installé et ajouté helmet on définit les politiques de sécurité manuellement.  
+On remarque aussi que dans imageSrc on ajoute unsplash vu que l'image viens de la.
 ```js
 // Headers fix using helmet
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https://images.unsplash.com"],
+      },
+    },
+    crossOriginEmbedderPolicy: true,
+  })
+);
 ```
-FAIL-NEW: 0     FAIL-INPROG: 0  WARN-NEW: 5     WARN-INPROG: 0  INFO: 0 IGNORE: 0       PASS: 137
+Ensuite, on désactive l’header `X-Powered-By` d’Express afin de ne pas divulguer la technologie utilisée par le serveur. Cela évite de donner des informations inutiles à un potentiel attaquant.
+
+```js
+app.disable("x-powered-by");
+```
+
+On ajoute ensuite un header `Permissions-Policy` pour désactiver l’accès à certaines fonctionnalités sensibles du navigateur comme la géolocalisation, le micro ou la caméra. Cela limite les permissions disponibles pour le site.
+
+```js
+app.use((req, res, next) => {
+  res.setHeader(
+    "Permissions-Policy",
+    "geolocation=(), microphone=(), camera=()"
+  );
+  next();
+});
+```
+Finalement, on ajoute le header `Cross-Origin-Resource-Policy` afin de limiter le chargement des ressources uniquement au même domaine (`same-origin`). Cela améliore l’isolation entre les ressources du site et les autres origines externes.
+```js
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+  next();
+});
+```
+Après ces corrections, le nouveau scan OWASP ZAP donne :
+```txt
+FAIL-NEW: 0     FAIL-INPROG: 0  WARN-NEW: 2     WARN-INPROG: 0  INFO: 0 IGNORE: 0       PASS: 140
+```
+La majorité des alertes ont donc été corrigées grâce à l’ajout de headers de sécurité et au durcissement de la configuration Express.

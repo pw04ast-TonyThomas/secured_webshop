@@ -7,6 +7,36 @@ const path = require("path");
 
 const app = express();
 
+// Headers fix using helmet
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https://images.unsplash.com"],
+      },
+    },
+    crossOriginEmbedderPolicy: true,
+  })
+);
+
+app.disable("x-powered-by");
+
+app.use((req, res, next) => {
+  res.setHeader(
+    "Permissions-Policy",
+    "geolocation=(), microphone=(), camera=()"
+  );
+  next();
+});
+
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+  next();
+});
+
 // Middleware pour parser le corps des requêtes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,9 +48,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 const auth = require("./middleware/auth");
 const adminOnly = require("./middleware/admin");
-
-// Headers fix using helmet
-app.use(helmet());
 
 // ---------------------------------------------------------------
 // Routes API (retournent du JSON)

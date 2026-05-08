@@ -45,6 +45,12 @@ module.exports = {
             return res.status(400).json({ error: 'Aucun fichier reçu' });
         }
 
+        // vérif de plus
+        const allowed = ["image/jpeg", "image/png", "image/webp"];
+        if (!allowed.includes(req.file.mimetype)) {
+            return res.status(400).json({ error: "Type de fichier invalide" });
+        }
+
         const photoPath = '/uploads/' + req.file.filename;
 
         db.query('UPDATE users SET photo_path = ? WHERE id = ?', [photoPath, userId], (err) => {

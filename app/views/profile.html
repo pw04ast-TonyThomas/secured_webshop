@@ -50,8 +50,11 @@
                 <!-- Formulaire d'upload de photo -->
                 <form id="photo-form">
                     <div class="form-group">
-                        <label for="photo">Photo de profil</label>
-                        <input type="file" id="photo" name="photo" accept="image/*">
+                        <div style="align-items: baseline; display: flex; gap: 5px;">
+                            <label for="photo">Photo de profil</label>
+                            <p style="margin-bottom: 0;">(jpeg, png, webp) max 2MB</p>
+                        </div>
+                        <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.webp">
                     </div>
                     <button type="submit">Envoyer la photo</button>
                 </form>

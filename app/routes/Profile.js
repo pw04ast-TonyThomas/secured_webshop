@@ -12,15 +12,46 @@ router.use(auth)
 // Configuration de multer pour l'upload de photos
 const storage = multer.diskStorage({
     destination: path.join(__dirname, '../public/uploads'),
-    filename: (_req, file, cb) => {
+    filename: (_req, file, callback) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
+
+        // Force une bonne extension qui est lowercase
+        const ext = path.extname(file.originalname).toLowerCase();
+
+        callback(null, uniqueSuffix + ext);
     }
 });
-const upload = multer({ storage });
+
+// Filtrage des fichiers que je veux accepté
+function fileFilter(_req, file, callback) {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (!allowedTypes.includes(file.mimetype)) {
+        return callback(new Error('Format de fichier non autorisé'), false);
+    }
+
+    callback(null, true);
+}
+
+// On crée la norme Multer.
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 2 * 1024 * 1024 // 2mb pour pas de fichier trop volumineux.
+    }
+});
 
 router.get('/', controller.get);
 router.post('/', controller.update);
-router.post('/photo', upload.single('photo'), controller.uploadPhoto);
+// Check d'erreur Multer
+router.post('/photo', (req, res, next) => {
+    upload.single('photo')(req, res, (err) => {
+        if (err instanceof multer.MulterError || err) {
+            return res.status(400).json({ error: err.message });
+        }
+        next();
+    });
+}, controller.uploadPhoto);
 
 module.exports = router;
